@@ -19,8 +19,6 @@ namespace BenchTask.API.Controllers
             _authentication = authentication;
         }
 
-        public IAuthenticationService Object { get; }
-
         [HttpPost]
         [Route("UserLogin")]
         public async Task<IActionResult> UserLogin(LoginViewModel user)
