@@ -30,7 +30,7 @@ namespace EudHub.API.Repositories
        
         public async Task<Course> GetCourseDetailsAsync(int id)
         {
-            return await _userInfoContext.Courses.FindAsync(id);
+            return await _userInfoContext.Courses.FirstOrDefaultAsync(s=>s.courseId==id);
         }
 
 

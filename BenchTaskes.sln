@@ -5,7 +5,11 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EudHub.API", "EudHub.API\EudHub.API.csproj", "{F465C0A4-7524-4D77-9A1F-042A2E669232}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduHub.XUnitTesting", "EduHub.XUnitTesting\EduHub.XUnitTesting.csproj", "{C5D1FA3C-89E2-4158-95FA-08CC86246482}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EduHub.XUnitTesting", "EduHub.XUnitTesting\EduHub.XUnitTesting.csproj", "{C5D1FA3C-89E2-4158-95FA-08CC86246482}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nUnit_Testing", "nUnit_Testing\nUnit_Testing.csproj", "{DCD7BFD3-1B59-4F63-82C1-17CFFF4D98D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EudHubConsume.MVC", "EudHubConsume.MVC\EudHubConsume.MVC.csproj", "{698F3E43-A572-4D2C-B585-AA573C1DBB33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{C5D1FA3C-89E2-4158-95FA-08CC86246482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5D1FA3C-89E2-4158-95FA-08CC86246482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5D1FA3C-89E2-4158-95FA-08CC86246482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCD7BFD3-1B59-4F63-82C1-17CFFF4D98D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCD7BFD3-1B59-4F63-82C1-17CFFF4D98D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCD7BFD3-1B59-4F63-82C1-17CFFF4D98D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCD7BFD3-1B59-4F63-82C1-17CFFF4D98D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{698F3E43-A572-4D2C-B585-AA573C1DBB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{698F3E43-A572-4D2C-B585-AA573C1DBB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{698F3E43-A572-4D2C-B585-AA573C1DBB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{698F3E43-A572-4D2C-B585-AA573C1DBB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

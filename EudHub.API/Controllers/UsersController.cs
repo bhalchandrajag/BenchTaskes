@@ -1,8 +1,10 @@
 ﻿using BenchTask.API.Models;
 using BenchTask.API.Repository;
 using BenchTask.API.Services;
+using EudHub.API.PasswordHashing;
 using EudHub.API.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,23 +13,25 @@ using System.Security.Claims;
 
 namespace BenchTask.API.Controllers
 {
-    [Route("api/[controller]")]
+    [EnableCors]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userRepository;
-        
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UsersController(IUserService userRepository)
+
+        public UsersController(IUserService userRepository, IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
-            
+            _passwordHasher = passwordHasher;
 
         }
 
-        //[Authorize(Roles = "Educator")]
+
+        //[Authorize(Roles ="Student")]
         [HttpGet]
-        [Route("GetAllUser")]
         public async Task<IActionResult> GetAllUsers()
         {
 
@@ -38,21 +42,31 @@ namespace BenchTask.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"an error occurred while retrieving users: {ex.Message}");
+                return StatusCode(401, $"an error occurred while retrieving users: {ex.Message}");
             }
 
         }
 
-        [HttpGet("getproductbyid")]
-        public User GetUserById(int Id)
+
+        [HttpGet]
+        public IActionResult GetUser(int Id)
         {
-            return _userRepository.GetUserById(Id);
+            try
+            {
+                var users = _userRepository.GetUserById(Id);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(401, $"an error occurred while retrieving users: {ex.Message}");
+            }
+
+
         }
 
-        // [Authorize]
-        [Route("Register")]
+     
         [HttpPost]
-        public async Task<IActionResult> RegisterUser([FromBody] User registerUser)
+        public async Task<IActionResult> RegisterUser(User registerUser)
         {
             try {
 
@@ -72,13 +86,12 @@ namespace BenchTask.API.Controllers
                 {
                     return BadRequest("User already exists");
                 }
-
-
+                var hashPassword = _passwordHasher.Hash(registerUser.Password);
                 var newUser = new User
                 {
                     UserId = newUserId,
                     Email = registerUser.Email,
-                    Password = registerUser.Password,
+                    Password = hashPassword,
                     FirstName = registerUser.FirstName,
                     LastName = registerUser.LastName,
                     Username = registerUser.Username,
@@ -89,20 +102,19 @@ namespace BenchTask.API.Controllers
                 };
 
                 await _userRepository.RegisterUserAsync(newUser);
-               
+
                 return Ok("User registered successfully");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, $"An error occurred while processing your request: {ex.Message}");
             }
         }
 
 
-        // [Route("{id}")]
-       // [Authorize(Roles = "Educator, Student")]
-        [HttpPut("UpdateUser")]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] User updatedUser)
+        
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(int id, User updatedUser)
         {
             if (!ModelState.IsValid)
             {
@@ -122,8 +134,7 @@ namespace BenchTask.API.Controllers
         }
 
 
-        //[Authorize(Roles ="Educator")]
-        [HttpDelete("DeleteUser")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserAsync(int id)
         {
             try
@@ -137,8 +148,8 @@ namespace BenchTask.API.Controllers
             }
         }
 
-
-    } 
+   
+    }
 }
 
 

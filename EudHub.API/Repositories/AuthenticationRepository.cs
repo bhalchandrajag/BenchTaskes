@@ -1,5 +1,9 @@
 ﻿using BenchTask.API.Models;
 using BenchTask.API.Services;
+using EudHub.API.PasswordHashing;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,12 +14,16 @@ namespace BenchTask.API.Repository
     public class AuthenticationRepository : IAuthenticationService
     {
         private IConfiguration _config;
-       //private readonly UserInfoContext _userInfoContext;
-        public AuthenticationRepository(IConfiguration configuration, EduHubInfoContext userInfoContext)
+        private readonly EduHubInfoContext _userInfoContext;
+        private readonly IPasswordHasher _passwordHasher;
+        public AuthenticationRepository(IConfiguration configuration,
+            EduHubInfoContext userInfoContext, IPasswordHasher passwordHasher)
         {
             _config = configuration;
-            //_userInfoContext = userInfoContext;
+            _userInfoContext = userInfoContext;
+            _passwordHasher = passwordHasher;
         }
+
         public string GenerateToken(User user)
         {
 
@@ -23,7 +31,7 @@ namespace BenchTask.API.Repository
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Username.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role) 
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -42,8 +50,11 @@ namespace BenchTask.API.Repository
 
             return tokenString;
         }
-
-
+        public User GetUserById(int id)
+        {
+            return _userInfoContext.Users.Where(x => x.UserId == id).FirstOrDefault();
+        }
 
     }
 }
+

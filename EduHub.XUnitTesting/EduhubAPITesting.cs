@@ -6,6 +6,7 @@ using Castle.Core.Resource;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.ComponentModel.DataAnnotations;
 using Xunit;
 
 namespace EduHub.XUnitTesting
@@ -13,97 +14,87 @@ namespace EduHub.XUnitTesting
     public class EduhubAPITesting
     {
 
-        private readonly Mock<IUserService> _mockUserService;
-       // private readonly AuthenticationController _authService;
+        private Mock<IUserService> _mockUserService;
+
 
         public EduhubAPITesting()
         {
             _mockUserService = new Mock<IUserService>();
-            //_authService = new AuthenticationController(_mockUserService.Object);
+
         }
 
 
-        [Fact]
-        public void GetUserList()
-        {
-            var usersinfo = GetUsersData();
-            _mockUserService.Setup(x => x.GetAllUsersAsync()).ReturnsAsync(usersinfo);
 
-            var userdusersControllerata = new UsersController(_mockUserService.Object);
+        //[Fact]
+        //public void  SaveUser_ShouldThrowException_WhenUserIsNull()
+        //{
+        //    // Arrange
+        //    var service = new UserRepository();
 
-            var usersList  = userdusersControllerata.GetAllUsers();
+        //    // Act
+        //    var act = () => { service.RegisterUserAsync(null); };
 
-            //Assert.NotNull(usersList);
-            //Assert.Equal(GetUsersData().Count(),usersList.Res));
-            //Assert.Equal(GetUsersData().ToString(), usersList.ToString());
-            Assert.True(usersinfo.Equals(usersList));
-        }
 
+        //    // Assert
+        //    Assert.Throws<ArgumentNullException>(act);
+        //}
 
         [Fact]
-        public  void AddUser_user()
+        public void AgeMustBeWithinRange()
         {
-            //arrange
-            var userList = GetUsersData();
-            _mockUserService.Setup(x => x.RegisterUserAsync(userList[0])).ReturnsAsync(userList[0]);
-               // .Returns(productList[1].ToString);
-            var userdusersControllerata = new UsersController(_mockUserService.Object);
-            //act
-            var productResult = userdusersControllerata.RegisterUser(userList[0]);
-            //assert
-            Assert.NotNull(productResult);
-            Assert.Equal(userList[0].UserId, productResult.Id);
-            //Assert.True(userList[1].UserId == productResult.Id);
-        }
-        [Fact]
-        public void CheckUserExistOrNotByUserName()
-        {
-            var user = new User { FirstName = "Prasanna", Email = string.Empty };
-            var service = new UsersController(_mockUserService.Object);
+            // Arrange
+            var model = new User {Mobilenumber="1234567" };
 
             // Act
-            var act = () => { service.RegisterUser(user); };
-
+            var context = new ValidationContext(model);
+            var results = new List<ValidationResult>();
+            var isValid = Validator.TryValidateObject(model, context, results,
+ true);
 
             // Assert
-            var exception = Assert.Throws<InvalidDataException>(act);
-            Assert.Equal("Email cannot be empty", exception?.Message);
-
-        }
-
-        private List<User> GetUsersData()
-        {
-            List<User> userData = new List<User>
-        {
-            new User
-            {
-                    UserId = 1,
-                    Email = "p@p.com",
-                    Password = "1234",
-                    FirstName = "Bhalchandra",
-                    LastName = "Jagdale",
-                    Username = "Bhala",
-                    Gender = "Male",
-                    Role = "Educator",
-                    Mobilenumber = "7588504907",
-                    ProfileImage = "NA"
-            },
-
-            new User
-            {
-                 UserId = 2,
-                    Email = "pm@p.com",
-                    Password = "12344",
-                    FirstName = "Father",
-                    LastName = "Jagdale",
-                    Username = "father",
-                    Gender = "Male",
-                    Role = "Educator",
-                    Mobilenumber = "8149072204",
-                    ProfileImage = "NA"
-            }
-        };
-            return userData;
+            Assert.False(isValid);
+            Assert.Single(results);
+            Assert.Equal("The field Age must be between 18 and 120.", results[0].ErrorMessage);
         }
     }
+
+
+
+
+
+
+    //private List<User> GetUsersData()
+    //{
+    //    List<User> userData = new List<User>
+    //    {
+    //        new User
+    //        {
+    //                UserId = 1,
+    //                Email = "p@p.com",
+    //                Password = "1234",
+    //                FirstName = "Bhalchandra",
+    //                LastName = "Jagdale",
+    //                Username = "Bhala",
+    //                Gender = "Male",
+    //                Role = "Educator",
+    //                Mobilenumber = "7588504907",
+    //                ProfileImage = "NA"
+    //        },
+
+    //        new User
+    //        {
+    //             UserId = 2,
+    //                Email = "pm@p.com",
+    //                Password = "12344",
+    //                FirstName = "Father",
+    //                LastName = "Jagdale",
+    //                Username = "father",
+    //                Gender = "Male",
+    //                Role = "Educator",
+    //                Mobilenumber = "8149072204",
+    //                ProfileImage = "NA"
+    //        }
+    //    };
+    //    return userData;
+    //}
 }

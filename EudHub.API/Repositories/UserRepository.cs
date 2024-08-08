@@ -2,19 +2,23 @@
 using BenchTask.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 
 namespace BenchTask.API.Repository
 {
     public class UserRepository : IUserService
     {
 
-        private readonly EduHubInfoContext _userInfoContext; 
+        private readonly EduHubInfoContext _userInfoContext;
+
+        public IUserService Object { get; }
 
         public UserRepository(EduHubInfoContext userInfoContext)
         {
             _userInfoContext = userInfoContext;
         }
 
+       
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
@@ -36,6 +40,7 @@ namespace BenchTask.API.Repository
 
         public async Task<User> RegisterUserAsync(User registerUser)
         {
+
             await _userInfoContext.Users.AddAsync(registerUser);
             await _userInfoContext.SaveChangesAsync();
             return registerUser;
@@ -51,9 +56,10 @@ namespace BenchTask.API.Repository
             }
 
             oldUser.Mobilenumber = updatedUser.Mobilenumber;
-            oldUser.Email = updatedUser.Email;
+            oldUser.Role = updatedUser.Role;
             oldUser.ProfileImage = updatedUser.ProfileImage;
-            oldUser.Gender = updatedUser.Gender;
+            oldUser.Username = updatedUser.Username;
+            //_userInfoContext.Entry(oldUser).State = EntityState.Modified;
 
             await _userInfoContext.SaveChangesAsync();
             return updatedUser;
@@ -78,6 +84,14 @@ namespace BenchTask.API.Repository
         {
             return _userInfoContext.Users.Where(x => x.UserId == id).FirstOrDefault();
         }
+
+        public User GetUserByEmail(string email)
+        {
+            return _userInfoContext.Users.Where(x => x.Email ==email).FirstOrDefault();
+        }
+
+
+
     }
 }
 

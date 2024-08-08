@@ -1,6 +1,7 @@
 using BenchTask.API.Models;
 using BenchTask.API.Repository;
 using BenchTask.API.Services;
+using EudHub.API.PasswordHashing;
 using EudHub.API.Repositories;
 using EudHub.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,6 +40,16 @@ builder.Services.AddScoped<IUserService, UserRepository>();
 builder.Services.AddScoped<ICourseService, CourseRepository>();
 builder.Services.AddScoped<IFeedBackService, FeedbackRepository>();
 builder.Services.AddScoped<IEnquriyService,EnquiryRepository>();
+builder.Services.AddScoped<IPasswordHasher,PasswordHasher>();
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+        {
+            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        });
+});
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -61,6 +72,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 

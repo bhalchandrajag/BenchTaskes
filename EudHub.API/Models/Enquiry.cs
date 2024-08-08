@@ -14,7 +14,7 @@ namespace EudHub.API.Models
         [Required(ErrorMessage = "The message is required")]
         public string message { get; set; }
         public string response { get; set; }
-        public string URL {  get; set; }
+        public string? URL {  get; set; }
 
         [DataType(DataType.DateTime)]
         public DateTime enquiryDate { get; set; }
