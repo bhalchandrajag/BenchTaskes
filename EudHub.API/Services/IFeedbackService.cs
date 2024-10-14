@@ -1,4 +1,4 @@
-﻿using BenchTask.API.Models;
+﻿using EduHub.API.Models;
 using EudHub.API.Models;
 
 namespace EudHub.API.Services

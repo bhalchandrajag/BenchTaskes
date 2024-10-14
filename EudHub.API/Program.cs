@@ -1,18 +1,20 @@
-using BenchTask.API.Models;
-using BenchTask.API.Repository;
-using BenchTask.API.Services;
+using EduHub.API.Models;
+using EduHub.API.Repository;
+using EduHub.API.Services;
 using EudHub.API.PasswordHashing;
 using EudHub.API.Repositories;
 using EudHub.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 
 builder.Services.AddAuthentication(op =>
 {
@@ -33,7 +35,8 @@ builder.Services.AddAuthentication(op =>
 
         };
     });
-builder.Services.AddDbContext<EduHubInfoContext>(option => option.UseSqlServer("name=ConnectionStrings:MyDBConnection"));
+builder.Services.AddDbContext<EduHubInfoContext>(option =>
+             option.UseSqlServer("name=ConnectionStrings:MyDBConnection"));
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationRepository>();
 builder.Services.AddScoped<IUserService, UserRepository>();
@@ -58,7 +61,7 @@ builder.Services.AddControllers()
                options.JsonSerializerOptions.IgnoreReadOnlyProperties = true; // Example: Ignore read-only properties
               // options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
            });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -68,14 +71,16 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EudHub.API v1"));
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors();
+app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

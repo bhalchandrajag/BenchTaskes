@@ -9,19 +9,63 @@
     <link rel="stylesheet" href="~/EudHubConsume.MVC.styles.css" asp-append-version="true" />
 </head>
 <body>
-    
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white" asp-area="" asp-controller="Login" asp-action="Index">EduHub</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Login" asp-action="Index">Home</a>
+                        </li>
+                      
+                    </ul>
+                    <a class="nav-link text-white " asp-area="" asp-controller="Login" asp-action="Index">Sign In</a>
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-success" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+    </header>
     <div class="container">
         <main role="main" class="pb-3">
+
+            @{
+                var errorMessage = TempData["errorMessage"]?.ToString();
+                var successMessage = TempData["successMessage"]?.ToString();
+            }
+            @if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                <div class="alert alert-success">
+                    <b>Success : </b>@successMessage
+                    <button type="button" class="btn-close float-end"
+                            data-bs-dismiss="alert" aria-lable="Close"></button>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    <b>Error : </b>@errorMessage
+                    <button type="button" class="btn-close float-end"
+                            data-bs-dismiss="alert" aria-lable="Close"></button>
+                </div>
+            }
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2024 - EudHub.Mvc - <a asp-area="" asp-controller="Users" asp-action="Index">Privacy</a>
+            &copy; 2024 - EudHub.Mvc
         </div>
     </footer>
-    <script src="~/js/custom.js"></script>
+    @* <script src="~/js/custom.js"></script> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

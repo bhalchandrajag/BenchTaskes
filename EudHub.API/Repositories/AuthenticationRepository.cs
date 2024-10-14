@@ -1,5 +1,5 @@
-﻿using BenchTask.API.Models;
-using BenchTask.API.Services;
+﻿using EduHub.API.Models;
+using EduHub.API.Services;
 using EudHub.API.PasswordHashing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace BenchTask.API.Repository
+namespace EduHub.API.Repository
 {
     public class AuthenticationRepository : IAuthenticationService
     {

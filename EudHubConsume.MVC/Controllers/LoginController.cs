@@ -1,12 +1,23 @@
 ﻿using EudHubConsume.MVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NuGet.Common;
+using NuGet.Protocol.Plugins;
 using System.Text;
+using System.Text.Json;
 
 namespace EudHubConsume.MVC.Controllers
 {
     public class LoginController : Controller
     {
+        Uri baseAddress = new Uri("https://localhost:44371/api");
+        private readonly HttpClient _httpClient;
+
+        public LoginController()
+        {
+            _httpClient = new HttpClient();
+            _httpClient.BaseAddress = baseAddress;
+        }
         public IActionResult Index()
         {
             return View();
@@ -16,29 +27,69 @@ namespace EudHubConsume.MVC.Controllers
         public async Task<IActionResult> LoginUser(LoginModel loginModel)
         {
 
-            using(var httpClient=new HttpClient())
+            try
             {
-                StringContent stringContent=new StringContent(JsonConvert.SerializeObject(loginModel),Encoding.UTF8
-                    ,"application/json");
-                using (var response= await httpClient.PostAsync("https://localhost:44371/api/Authentication/UserLogin", stringContent))
+               // UserDetailsVM userModel = new UserDetailsVM();
+
+                string data = JsonConvert.SerializeObject(loginModel);
+                StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await _httpClient.PostAsync(_httpClient.BaseAddress +
+                    "/Authentication/UserLogin", content);
+
+                if (response.StatusCode.ToString() == "BadRequest")
                 {
-                    string token= await response.Content.ReadAsStringAsync();
-                    if (token == "Username and Password is not correct.")
-                    {
-                        ViewBag.Message = "Incorrect Password or Email";
-                        return Redirect("~/Login/Index");
-                    }
-                    HttpContext.Session.SetString("JwTtoken", token);
+                    string message = await response.Content.ReadAsStringAsync();
+                    TempData["errorMessage"] = message;
+                    return View("Index");
                 }
-                return Redirect("~/Dashboard/Index");
+                else if (response.StatusCode.ToString() == "Unauthorized")
+                {
+                    string message = await response.Content.ReadAsStringAsync();
+                    TempData["errorMessage"] = message;
+                    return View("Index");
+                }
+                else if (response.IsSuccessStatusCode)
+                {
+
+                    var token = await response.Content.ReadAsStringAsync();
+
+                    var userprofile = JsonConvert.DeserializeObject<UserDetailsVM>(token);
+
+                    var userSessionModel = new UserDetailsVM
+                    {
+                        UserId = userprofile.UserId,
+                        FirstName = userprofile.FirstName,
+                        LastName = userprofile.LastName
+                    };
+
+                    HttpContext.Session.SetString("UserDetailsVM", JsonConvert.SerializeObject(userSessionModel));
+                    //TempData["UserData"] =  JsonConvert.SerializeObject(userprofile);
+
+                    //userModel.FirstName = userModel.FirstName;
+
+                    //TempData["UserData"] = userModel.FirstName;
+                   // ViewBag.MyData = userModel;
+
+                    return RedirectToAction("Index","Dashboard");
+                }
+               
             }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View("Index");
+            }
+            return View("Index");
 
         }
+
+
+
 
         public IActionResult SignOut()
         {
            HttpContext.Session.Clear();
-            return Redirect("~/Login/Index");
+            return RedirectToAction("Index", "Login");
         }
     }
 }

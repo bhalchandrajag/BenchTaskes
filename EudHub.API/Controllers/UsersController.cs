@@ -1,6 +1,7 @@
-﻿using BenchTask.API.Models;
-using BenchTask.API.Repository;
-using BenchTask.API.Services;
+﻿using EduHub.API.Models;
+using EduHub.API.Repository;
+using EduHub.API.Services;
+using EudHub.API.Models;
 using EudHub.API.PasswordHashing;
 using EudHub.API.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace BenchTask.API.Controllers
+namespace EduHub.API.Controllers
 {
     [EnableCors]
     [Route("api/[controller]/[action]")]
@@ -30,7 +31,7 @@ namespace BenchTask.API.Controllers
         }
 
 
-        //[Authorize(Roles ="Student")]
+      // [Authorize(Roles ="Educator")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -49,11 +50,11 @@ namespace BenchTask.API.Controllers
 
 
         [HttpGet]
-        public IActionResult GetUser(int Id)
+        public async Task<IActionResult> GetUser(int Id)
         {
             try
             {
-                var users = _userRepository.GetUserById(Id);
+                var users = await _userRepository.GetUserById(Id);
                 return Ok(users);
             }
             catch (Exception ex)
@@ -75,18 +76,23 @@ namespace BenchTask.API.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var maxUserId = _userRepository.GetusermaxId();
+                int maxUserId = await _userRepository.GetusermaxId();
 
                 // Increment maxUserId by 1 to generate a new UserId
-                var newUserId = maxUserId + 1;
+                int newUserId = maxUserId + 1;
 
+                if (registerUser.FirstName == registerUser.Username)
+                {
+                    return BadRequest("first name and username should not be same!");
+                }
                 // Check if username already exists
-                var userExists = _userRepository.GetUserByUsernameAndPassword(registerUser.Email, registerUser.Username);
-                if (userExists != null)
+                var userExists = await _userRepository.UserExist(registerUser.Email, registerUser.Username);
+                if (userExists!=null)
                 {
                     return BadRequest("User already exists");
                 }
                 var hashPassword = _passwordHasher.Hash(registerUser.Password);
+               // var hashPassword = BCrypt.Net.BCrypt.HashPassword(registerUser.Password);
                 var newUser = new User
                 {
                     UserId = newUserId,
@@ -114,8 +120,9 @@ namespace BenchTask.API.Controllers
 
         
         [HttpPut]
-        public async Task<IActionResult> UpdateUser(int id, User updatedUser)
-        {
+       // [Authorize]
+        public async Task<IActionResult> UpdateUser(int id, UpdateUserVM updatedUser)
+            {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -124,8 +131,8 @@ namespace BenchTask.API.Controllers
             try
             {
 
-                var updatedNewUser = await _userRepository.UpdateUserAsync(id, updatedUser);
-                return Ok(updatedNewUser);
+                var q = await _userRepository.UpdateUserAsync(id, updatedUser);
+                return Ok(q);
             }
             catch (ArgumentException ex)
             {
@@ -135,7 +142,7 @@ namespace BenchTask.API.Controllers
 
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserAsync(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
             try
             {

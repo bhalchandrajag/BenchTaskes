@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using System.Text.Json
+@model EudHubConsume.MVC.Models.UserDetailsVM
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -26,6 +30,14 @@
                             <a class="nav-link text-white" asp-area="" asp-controller="Courses" asp-action="Index">Courses</a>
                         </li>
                     </ul>
+                    @if (Context.Session.TryGetValue("UserDetailsVM", out var usermodeldata))
+                   {
+                        var usersessionmodel = JsonSerializer.Deserialize<UserDetailsVM>(usermodeldata);
+                        if (usersessionmodel!=null)
+                        {
+                            <span class="nav-link text-white "> Welcome @usersessionmodel.FirstName @usersessionmodel.LastName</span>
+                        }
+                   }
                     <a class="nav-link text-white " asp-area="" asp-controller="Login" asp-action="SignOut">Sign Out</a>
                     <form class="d-flex" role="search">
                         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -52,7 +64,7 @@
             @if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 <div class="alert alert-danger">
-                    <b>Success :</b>@errorMessage
+                    <b>Error :</b>@errorMessage
                     <button type="button" class="btn-close float-end"
                             data-bs-dismiss="alert" aria-lable="Close"></button>
                 </div>

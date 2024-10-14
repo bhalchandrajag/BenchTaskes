@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 
 
-namespace BenchTask.API.Models
+namespace EduHub.API.Models
 {
     public partial class EduHubInfoContext : DbContext
     {

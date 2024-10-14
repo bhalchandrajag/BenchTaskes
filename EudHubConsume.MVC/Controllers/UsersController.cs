@@ -9,7 +9,7 @@ namespace EudHubConsume.MVC.Controllers
 {
     public class UsersController : Controller
     {
-        Uri baseAddress = new Uri("https://localhost:44371/api/");
+        Uri baseAddress = new Uri("https://localhost:44371/api");
         private readonly HttpClient _httpClient;
 
         public UsersController()
@@ -19,14 +19,13 @@ namespace EudHubConsume.MVC.Controllers
         }
 
         [HttpGet]
-        
         public async Task<IActionResult> Index()
         {
-            //var accessToken=HttpContext.Session.GetString("JwTtoken");
-            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",accessToken);
+           // var accessToken = HttpContext.Session.GetString("JWTtoken");
+            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             List<UserViewModel> usersList = new List<UserViewModel>();
             HttpResponseMessage response = await _httpClient.GetAsync(_httpClient.BaseAddress +
-                "users/GetAllUsers");
+                "/users/GetAllUsers");
 
             if (response.IsSuccessStatusCode)
             {
@@ -36,6 +35,22 @@ namespace EudHubConsume.MVC.Controllers
             return View(usersList);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            // var accessToken = HttpContext.Session.GetString("JWTtoken");
+            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            UserViewModel usersList = new UserViewModel();
+            HttpResponseMessage response = await _httpClient.GetAsync(_httpClient.BaseAddress +
+                 "/Users/GetUser?id=" + id);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                usersList = JsonConvert.DeserializeObject<UserViewModel>(data);
+            }
+            return View(usersList);
+        }
 
         [HttpGet]
         public IActionResult Create()
@@ -51,7 +66,15 @@ namespace EudHubConsume.MVC.Controllers
                 string data = JsonConvert.SerializeObject(userModel);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _httpClient.PostAsync(_httpClient.BaseAddress +
-                    "users/RegisterUser", content);
+                    "/users/RegisterUser", content);
+
+                if (response.StatusCode.ToString() == "BadRequest")
+                {
+                    string resData = await response.Content.ReadAsStringAsync();
+                    TempData["errorMessage"] = resData;
+                    return View("Create");
+                }
+
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["successMessage"] = "User created successfully!";
@@ -67,18 +90,20 @@ namespace EudHubConsume.MVC.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
+                //var accessToken = HttpContext.Session.GetString("JWTtoken");
+                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 UserViewModel user = new UserViewModel();
 
-                HttpResponseMessage response = _httpClient.GetAsync(_httpClient.BaseAddress +
-                 "Users/GetUser?id=" + id).Result;
+                HttpResponseMessage response = await _httpClient.GetAsync(_httpClient.BaseAddress +
+                 "/Users/GetUser?id=" + id);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string data = response.Content.ReadAsStringAsync().Result;
+                    string data = await response.Content.ReadAsStringAsync();
                     user = JsonConvert.DeserializeObject<UserViewModel>(data);
                 }
                 return View(user);
@@ -92,21 +117,72 @@ namespace EudHubConsume.MVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(UserViewModel userModel)
+        public async Task<IActionResult> Edit(int id,UpdateUserViewModel userModel)
         {
             
             try
-            {
-               var _httpClient1 = new HttpClient();
-                _httpClient1.BaseAddress = new Uri("https://localhost:44371/api/");
+           {
+                //var accessToken = HttpContext.Session.GetString("JWTtoken");
+                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 string data = JsonConvert.SerializeObject(userModel);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                var response = await _httpClient1.PutAsJsonAsync("Users/UpdateUser", content);
+                HttpResponseMessage response = await _httpClient.PutAsync(_httpClient.BaseAddress + "/users/UpdateUser?id=" + id, content);
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["successMessage"] = "User details updated successfully!";
                     return RedirectToAction("Index");
                 }
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                //var accessToken = HttpContext.Session.GetString("JWTtoken");
+                //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                UserViewModel user = new UserViewModel();
+
+                HttpResponseMessage response = await _httpClient.GetAsync(_httpClient.BaseAddress +
+                "/Users/GetUser?id=" + id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    
+                    string data = await response.Content.ReadAsStringAsync();
+                    user = JsonConvert.DeserializeObject<UserViewModel>(data);
+                }
+                return View(user);
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMessage"] = ex.Message;
+                return View();
+            }
+
+        }
+        [HttpPost,ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirm(int id)
+        {
+            try
+            {
+               
+                HttpResponseMessage response = await _httpClient.DeleteAsync(_httpClient.BaseAddress +
+                 "/Users/DeleteUser/" + id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["successMessage"] = "User Deleted successfully!";
+                    return RedirectToAction("Index");
+                }
+                
             }
             catch (Exception ex)
             {

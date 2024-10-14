@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace BenchTask.API.Models
+namespace EduHub.API.Models
 {
     public class Course
     {

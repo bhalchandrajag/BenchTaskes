@@ -1,10 +1,11 @@
-﻿using BenchTask.API.Models;
-using BenchTask.API.Services;
+﻿using EduHub.API.Models;
+using EduHub.API.Services;
+using EudHub.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 
-namespace BenchTask.API.Repository
+namespace EduHub.API.Repository
 {
     public class UserRepository : IUserService
     {
@@ -27,14 +28,14 @@ namespace BenchTask.API.Repository
 
      
 
-        public User GetUserByUsernameAndPassword(string email, string username)
+        public async Task<User> UserExist(string email, string username)
         {
-            return _userInfoContext.Users.FirstOrDefault(x => x.Email == email && x.Username == username);
+            return await _userInfoContext.Users.FirstOrDefaultAsync(x => x.Email == email || x.Username == username);
         }
 
-        public int GetusermaxId()
+        public async Task<int> GetusermaxId()
         {
-            return _userInfoContext.Users.Max(u => (int?)u.UserId) ?? 0;
+            return await _userInfoContext.Users.MaxAsync(u => (int?)u.UserId) ?? 0;
         }
 
 
@@ -47,9 +48,9 @@ namespace BenchTask.API.Repository
 
         }
 
-        public async Task<User> UpdateUserAsync(int id, User updatedUser)
+        public async Task<UpdateUserVM> UpdateUserAsync(int id, UpdateUserVM updatedUser)
         {
-            var oldUser = await _userInfoContext.Users.FirstOrDefaultAsync(s => s.UserId == id);
+            var oldUser = _userInfoContext.Users.FirstOrDefault(s => s.UserId == id);
             if (oldUser == null)
             {
                 throw new ArgumentException("User not found");
@@ -58,7 +59,7 @@ namespace BenchTask.API.Repository
             oldUser.Mobilenumber = updatedUser.Mobilenumber;
             oldUser.Role = updatedUser.Role;
             oldUser.ProfileImage = updatedUser.ProfileImage;
-            oldUser.Username = updatedUser.Username;
+            oldUser.Gender = updatedUser.Gender;
             //_userInfoContext.Entry(oldUser).State = EntityState.Modified;
 
             await _userInfoContext.SaveChangesAsync();
@@ -68,7 +69,7 @@ namespace BenchTask.API.Repository
         public async Task<User> DeleteUserAsync(int id)
         {
 
-            var user = await _userInfoContext.Users.FirstOrDefaultAsync(s => s.UserId == id && s.Role == "Student");
+            var user = await _userInfoContext.Users.FirstOrDefaultAsync(s => s.UserId == id);
             if (user == null)
             {
                 throw new ArgumentException("User not found");
@@ -80,18 +81,18 @@ namespace BenchTask.API.Repository
             return user;
         }
 
-        public User GetUserById(int id)
+        public async Task<User> GetUserById(int id)
         {
-            return _userInfoContext.Users.Where(x => x.UserId == id).FirstOrDefault();
+            return await _userInfoContext.Users.Where(x => x.UserId == id).FirstOrDefaultAsync();
         }
 
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
-            return _userInfoContext.Users.Where(x => x.Email ==email).FirstOrDefault();
+            return await _userInfoContext.Users.Where(x => x.Email ==email).FirstOrDefaultAsync();
         }
 
-
-
+        
+      
     }
 }
 

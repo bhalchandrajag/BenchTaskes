@@ -9,7 +9,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table table-striped table-success">
     <thead>
         <tr>
             <th>
@@ -79,8 +79,14 @@
                 @Html.DisplayFor(modelItem => item.ProfileImage)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit","Users", new { id=item.UserId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.UserId })
+                    @Html.ActionLink("Edit", "Edit", new { id = item.UserId }) &nbsp;
+                    @Html.ActionLink("Details", "Details", new { id = item.UserId }) &nbsp;
+
+                    @if (item.Role=="Student")
+                    {
+                      @Html.ActionLink("Delete", "Delete", new { id = item.UserId });
+                    }
+    
             </td>
         </tr>
 }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BenchTask.API.Models
+namespace EduHub.API.Models
 {
     [NotMapped]
     public class LoginViewModel

@@ -1,7 +1,7 @@
-using BenchTask.API.Controllers;
-using BenchTask.API.Models;
-using BenchTask.API.Repository;
-using BenchTask.API.Services;
+using EduHub.API.Controllers;
+using EduHub.API.Models;
+using EduHub.API.Repository;
+using EduHub.API.Services;
 using Castle.Core.Configuration;
 using Castle.Core.Resource;
 using EudHub.API.PasswordHashing;

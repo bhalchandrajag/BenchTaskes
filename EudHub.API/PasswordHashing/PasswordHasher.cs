@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using BCrypt.Net;
+//using BCrypt.Net;
 using Microsoft.AspNetCore.Identity;
 
 namespace EudHub.API.PasswordHashing

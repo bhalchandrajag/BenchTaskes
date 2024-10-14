@@ -1,7 +1,7 @@
-﻿using BenchTask.API.Models;
+﻿using EduHub.API.Models;
 
 
-namespace BenchTask.API.Services
+namespace EduHub.API.Services
 {
     public interface IAuthenticationService
     {

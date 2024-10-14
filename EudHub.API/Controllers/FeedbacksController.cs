@@ -1,5 +1,5 @@
-﻿using BenchTask.API.Models;
-using BenchTask.API.Repository;
+﻿using EduHub.API.Models;
+using EduHub.API.Repository;
 using EudHub.API.Models;
 using EudHub.API.Services;
 using Microsoft.AspNetCore.Authorization;
